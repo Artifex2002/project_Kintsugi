@@ -1,22 +1,21 @@
-# SmolVLA + LIBERO (MuJoCo + Robosuite) Conda(Mamba) Template
+# Kintsugi
+An experimental fracture of VLA models: exposing universal vulnerabilities so they may be mended with gold.
 
-A reproducible research environment for running **SmolVLA**, a Vision-Language-Action model, in simulation using the **LIBERO** benchmark suite on the **MuJoCo** physics engine. 
+---
 
-This repository provides a ready-to-use **conda** environment along with verification scripts to ensure the full stack is functioning correctly before any experiments begin.
+This repo is a reproducible research environment (provides a ready-to-use **conda(mamba)** environment) for running and experimenting with my theorized universal attack on Vision-Language-Action models, specifically on **SmolVLA**, in simulation using the **LIBERO** benchmark suite on the **MuJoCo** physics engine. 
 
 **Stack:**
-- **SmolVLA** — A small Vision-Language-Action model (HuggingFace / LeRobot)
+- **SmolVLA** — A compact (450M params), small Vision-Language-Action model (HuggingFace / LeRobot)
 - **LIBERO** — 130 language-conditioned robot manipulation tasks (LeRobot/Libero)
 - **MuJoCo 3.x** — Physics engine for robotics simulation
 - **Robosuite 1.4.1** — Robot simulation framework (pinned for LIBERO compatibility)
 - **PyTorch with MPS** — GPU acceleration via Apple Metal Performance Shaders
-- **pyav** — Video decoding backend (replaces torchcodec, which is broken on macOS ARM?)
-
-The goal of this template is to eliminate environment setup friction and provide a personal reproducible starting point for my research and experimentation.
+- **pyav** — Video decoding backend (replaces torchcodec, broken on macOS ARM?)
 
 ---
 
-## 🚀 Quick Start
+## 🚀 Getting Started
 
 ### Prerequisites
 
@@ -39,10 +38,10 @@ brew install glfw cmake
 ### Step 2: Clone This Repository
 
 ```bash
-git clone https://github.com/Artifex2002/vla_base_template.git
+git clone https://github.com/Artifex2002/project_Kintsugi.git
 
 # Feel free to rename this to your desired project name
-cd vla_base_template 
+cd project_Kintsugi
 ```
 
 ### Step 3: Create the Conda Environment
@@ -50,36 +49,40 @@ cd vla_base_template
 ```bash
 # Creates the environment with all pinned dependencies
 # Replace my_new_env_name with desired environment name
-mamba env create -f environment.yml -n my_new_env_name
+mamba env create -f environment.yml -n project_Kintsugi
 
 # Activate it
-conda activate my_new_env_name
+conda activate project_Kintsugi
 ```
 
 ### Step 4: Verify Installation
 
 ```bash
 # 1. Confirm MuJoCo and Robosuite are working
-python mujoco_robosuite_check.py
+cd phase_0
+python phase0_mujoco_robosuite_check.py
 
 # 2. Confirm the full SmolVLA inference pipeline works end-to-end
-python smolvla_minimal_inference_check.py
+python phase0_smolvla_minimal_inference_check.py
 ```
 
 Both scripts should complete without errors and print a final `✓` summary.
+
+🎉 **Environment is now good to go. Time to run some attacks!**
 
 ---
 
 ## 📂 Project Structure
 
 ```
-vla_base_template/
-├── environment.yml                    # Conda environment spec (pinned versions)
-├── mujoco_robosuite_check.py          # Verifies MuJoCo + Robosuite installation
-├── smolvla_minimal_inference_check.py # Verifies full SmolVLA inference pipeline
-├── check_script_outputs/              # JSON outputs from verification runs
-│   └── phase0_1_results.json
-└── README.md                          # This file
+project_Kintsugi/
+├── environment.yml                                  # Conda environment spec (pinned versions)
+├── phase_0/                                         # phase0 scripts
+│   └── phase0_smolvla_minimal_inference_check.py    # Verifies full SmolVLA inference pipeline
+│   └── phase0_mujoco_robosuite_check.py             # Verifies MuJoCo + Robosuite installation
+│   └── check_script_outputs/                        # JSON outputs from stack verification runs
+│       └── phase0_1_results.json
+└── README.md                                        # This file
 ```
 
 ---
@@ -106,14 +109,12 @@ torchcodec requires FFmpeg shared libraries (`.dylib`) that are not correctly li
 `smolvla_base` (the pre-trained checkpoint) was not trained on LIBERO data. Running it zero-shot on LIBERO observations produces a 6-DOF output instead of the expected 7-DOF, because the action and state spaces don't align. This is expected and confirms that **fine-tuning smolvla on LIBERO data is required** before outputs are meaningful. The verification script confirms the pipeline runs end-to-end; it does not validate action quality.
 
 ---
+
 ## 🤝 Contributing & Collaboration
 
-If you install any new packages into the environment, **always update `environment.yml` before pushing** so others can reproduce your exact setup:
+If you install any new packages into the environment, **always update `environment.yml` before pushing** so others can avail your exact setup:
 
 ```bash
 mamba env export --no-builds > environment.yml
 ```
 The **--no-builds** flag strips platform-specific build strings (e.g. py310h1234_0) that would cause the environment to fail on someone else's machine. Without it, the export is often not reproducible across different OS versions or hardware.
-
-
-🎉 **Environment is good to go. Time to do some science!**
