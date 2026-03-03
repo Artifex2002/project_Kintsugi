@@ -1,0 +1,19 @@
+{
+  "instruction": "put the white mug on the left plate and put the yellow and white mug on the right plate",
+  "action": [
+    [
+      -0.21125178039073944,
+      0.19296975433826447,
+      0.6604083776473999,
+      2.260435104370117,
+      0.17052990198135376,
+      -0.5241184830665588
+    ]
+  ],
+  "action_shape": [
+    1,
+    6
+  ],
+  "device": "mps",
+  "is_valid_shape": false
+}
