@@ -1,0 +1,23 @@
+{
+  "instruction": "put the white mug on the left plate and put the yellow and white mug on the right plate",
+  "action": [
+    [
+      0.30110347270965576,
+      -0.1250828057527542,
+      0.2993847727775574,
+      1.9437233209609985,
+      -0.06407769024372101,
+      3.216726779937744
+    ]
+  ],
+  "action_shape": [
+    1,
+    6
+  ],
+  "device": "mps",
+  "is_valid_shape": false,
+  "is_deterministic": false,
+  "reference_image_path": "phase0_outputs/reference_image.png",
+  "model_id": "lerobot/smolvla_base",
+  "dataset_id": "lerobot/libero"
+}
