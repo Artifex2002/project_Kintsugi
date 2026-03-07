@@ -190,6 +190,7 @@ dependencies:
     - pyobjc-framework-Quartz==12.1
     - pyserial==3.5
     - python-dateutil==2.9.0.post0
+    - python-dotenv==1.2.2
     - pytz==2025.2
     - pyyaml-include==1.4.1
     - regex==2026.2.19
