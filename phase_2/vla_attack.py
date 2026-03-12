@@ -136,8 +136,21 @@ def run_adversarial_attack():
         
         # C. Block Decomposition
         betas = surrogate.model.covar_module.base_kernel.lengthscale.squeeze().detach().cpu()
-        active_block = decomposer.get_most_important_block(betas)
-        print(f"   [Decomposer] Targeting Block Indices: {active_block}")
+        
+        # --- PHASED ATTACK LOGIC ---
+        # Force the optimizer to attack the 4-word suffix for the first 30 iterations
+        phase_1_budget = 30
+        
+        if step <= phase_1_budget:
+            # Calculate the indices of the last 4 tokens (the suffix)
+            seq_len = space.sequence_length
+            num_suff = 4 # Based on your HybridSearchSpace initialization
+            active_block = list(range(seq_len - num_suff, seq_len))
+            print(f"   [Phase 1] Forcing Suffix Block Indices: {active_block}")
+        else:
+            # Hand control back to the GP to find the next most vulnerable block
+            active_block = decomposer.get_most_important_block(betas)
+            print(f"   [Phase 2] GP Target Block Indices: {active_block}")
         
         # D. Generate & Score Candidates
         # --- Filter out already evaluated candidates ---
