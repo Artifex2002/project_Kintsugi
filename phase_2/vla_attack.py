@@ -48,6 +48,25 @@ def load_representative_images(base_dir="datasets_2", images_per_task=1):
     images = [Image.open(p).convert("RGB") for p in image_paths]
     return images
 
+def load_task_images(base_dir="datasets_2", task_name="task_2", num_images=20):
+    """
+    Grabs the first 'num_images' strictly from a specific task folder.
+    Forces the VLA to work the attack to a single visual environment.
+    """
+    print(f"[INIT] Targeting specific task: {task_name}...")
+    task_folder = os.path.join(base_dir, task_name)
+    
+    # Grab all images in the specific folder
+    imgs_in_folder = glob.glob(os.path.join(task_folder, "*.jpg")) + glob.glob(os.path.join(task_folder, "*.png"))
+    
+    # Sort them so we consistently get the exact same first 20 images
+    imgs_in_folder.sort() 
+    selected_paths = imgs_in_folder[:num_images]
+    
+    print(f"[INIT] Loaded a targeted batch of {len(selected_paths)} images from {task_name}.")
+    
+    return [Image.open(p).convert("RGB") for p in selected_paths]
+
 def generate_block_candidates(best_x: torch.Tensor, block_indices: list, bounds: list, num_samples: int = 2000):
     candidates = best_x.repeat(num_samples, 1)
     for idx in block_indices:
@@ -96,7 +115,10 @@ def run_adversarial_attack():
     vla = VLAModel() 
     
     # Load 3 image from each of your 20 task folders = 60 images
-    image_batch = load_representative_images(base_dir="datasets_2", images_per_task=3)
+    # image_batch = load_representative_images(base_dir="datasets_2", images_per_task=3)
+
+    # Load the first 20 images strictly from task_2
+    image_batch = load_task_images(base_dir="datasets_2", task_name="task_2", num_images=20)
     
     space = HybridSearchSpace(base_text=base_prompt, num_suffixes=4, max_synonyms=8, suffix_vocab_size=500)
     surrogate = GPSurrogate(sequence_length=space.sequence_length, device=device)
