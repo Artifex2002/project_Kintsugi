@@ -120,6 +120,11 @@ def run_adversarial_attack():
     print(f"   -> Initial Prompt: '{orig_text}'")
     print(f"   -> Initial Averaged Loss (Neg MSE): {orig_loss:.4f}")
 
+    # --- Block Rotation Tracking ---
+    MAX_CONSECUTIVE_VISITS = 5  # Force a new block after 5 consecutive tries
+    last_block_idx = None
+    consecutive_visits = 0
+
     # --- 3. The BO Loop ---
     print("\n" + "="*60)
     print(f"🔥 ENTERING BAYESIAN OPTIMIZATION LOOP")
@@ -138,8 +143,8 @@ def run_adversarial_attack():
         betas = surrogate.model.covar_module.base_kernel.lengthscale.squeeze().detach().cpu()
         
         # --- PHASED ATTACK LOGIC ---
-        # Force the optimizer to attack the 4-word suffix for the first 30 iterations
-        phase_1_budget = 30
+        # Force the optimizer to attack the 4-word suffix for the first 15 iterations
+        phase_1_budget = 15
         
         if step <= phase_1_budget:
             # Calculate the indices of the last 4 tokens (the suffix)
@@ -147,10 +152,41 @@ def run_adversarial_attack():
             num_suff = 4 # Based on your HybridSearchSpace initialization
             active_block = list(range(seq_len - num_suff, seq_len))
             print(f"   [Phase 1] Forcing Suffix Block Indices: {active_block}")
+            
+            # Keep tracking variables reset during Phase 1
+            consecutive_visits = 0
+            last_block_idx = None
+            
         else:
             # Hand control back to the GP to find the next most vulnerable block
-            active_block = decomposer.get_most_important_block(betas)
-            print(f"   [Phase 2] GP Target Block Indices: {active_block}")
+            suggested_block = decomposer.get_most_important_block(betas)
+            suggested_idx = decomposer.blocks.index(suggested_block)
+            
+            # Check for block obsession
+            if suggested_idx == last_block_idx:
+                consecutive_visits += 1
+            else:
+                consecutive_visits = 1 # Reset to 1 since we are visiting a new block
+                
+            if consecutive_visits > MAX_CONSECUTIVE_VISITS:
+                # Force the second-best block
+                scores = decomposer.score_blocks(betas)
+                # Ensure scores is a numpy array so we can easily suppress the max
+                if not isinstance(scores, np.ndarray):
+                    scores = np.array(scores)
+                
+                scores[suggested_idx] = -999.0  # Heavily suppress current best block
+                forced_idx = np.argmax(scores).item()
+                
+                active_block = decomposer.blocks[forced_idx]
+                last_block_idx = forced_idx
+                consecutive_visits = 1 # We are now on visit 1 of the forced block
+                print(f"   [Phase 2] GP Target: Block {suggested_idx} | [FORCED ROTATION] Switched to Block {forced_idx}: {active_block}")
+            else:
+                active_block = suggested_block
+                last_block_idx = suggested_idx
+                print(f"   [Phase 2] GP Target Block Indices: {active_block} (Visit {consecutive_visits}/{MAX_CONSECUTIVE_VISITS})")
+        # ---------------------------
         
         # D. Generate & Score Candidates
         # --- Filter out already evaluated candidates ---
