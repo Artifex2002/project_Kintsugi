@@ -251,6 +251,13 @@ def run_adversarial_attack():
             best_loss = actual_loss
             best_x = next_x
             
+            # --- HOT BLOCK MECHANIC ---
+            # If we are in Phase 2, reset the boredom counter so the GP can keep exploiting this goldmine!
+            if step > phase_1_budget:
+                print("   [Hot Block] Resetting rotation counter! Letting the optimizer keep mining this block.")
+                consecutive_visits = 0
+            # --------------------------
+
         # Stopping Condition
         if best_loss > success_threshold:
             print(f"\n [JAILBREAK ACHIEVED] Loss {best_loss:.4f} surpassed threshold {success_threshold}.")
