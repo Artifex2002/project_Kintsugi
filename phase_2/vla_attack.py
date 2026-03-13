@@ -144,8 +144,13 @@ def run_adversarial_attack():
 
     # --- Block Rotation Tracking ---
     MAX_CONSECUTIVE_VISITS = 5  # Force a new block after 5 consecutive tries
+    HOT_BLOCK_DURATION = 5
     last_block_idx = None
     consecutive_visits = 0
+
+    # --- Hot Block Tracking ---
+    hot_block_timer = 0
+    hot_block_idx = None
 
     # --- 3. The BO Loop ---
     print("\n" + "="*60)
@@ -180,34 +185,42 @@ def run_adversarial_attack():
             last_block_idx = None
             
         else:
-            # Hand control back to the GP to find the next most vulnerable block
-            suggested_block = decomposer.get_most_important_block(betas)
-            suggested_idx = decomposer.blocks.index(suggested_block)
-            
-            # Check for block obsession
-            if suggested_idx == last_block_idx:
-                consecutive_visits += 1
+            # --- HOT BLOCK OVERRIDE ---
+            if hot_block_timer > 0:
+                active_block = decomposer.blocks[hot_block_idx]
+                last_block_idx = hot_block_idx
+                hot_block_timer -= 1
+                consecutive_visits = 1 # Keep the normal counter stable while hot
+                print(f"   [Phase 2] 🔥 HOT BLOCK ACTIVE: Staying on Block {hot_block_idx}: {active_block} ({hot_block_timer} visits remaining)")
+                
             else:
-                consecutive_visits = 1 # Reset to 1 since we are visiting a new block
+                # Hand control back to the GP to find the next most vulnerable block
+                suggested_block = decomposer.get_most_important_block(betas)
+                suggested_idx = decomposer.blocks.index(suggested_block)
                 
-            if consecutive_visits > MAX_CONSECUTIVE_VISITS:
-                # Force the second-best block
-                scores = decomposer.score_blocks(betas)
-                # Ensure scores is a numpy array so we can easily suppress the max
-                if not isinstance(scores, np.ndarray):
-                    scores = np.array(scores)
-                
-                scores[suggested_idx] = -999.0  # Heavily suppress current best block
-                forced_idx = np.argmax(scores).item()
-                
-                active_block = decomposer.blocks[forced_idx]
-                last_block_idx = forced_idx
-                consecutive_visits = 1 # We are now on visit 1 of the forced block
-                print(f"   [Phase 2] GP Target: Block {suggested_idx} | [FORCED ROTATION] Switched to Block {forced_idx}: {active_block}")
-            else:
-                active_block = suggested_block
-                last_block_idx = suggested_idx
-                print(f"   [Phase 2] GP Target Block Indices: {active_block} (Visit {consecutive_visits}/{MAX_CONSECUTIVE_VISITS})")
+                # Check for block obsession
+                if suggested_idx == last_block_idx:
+                    consecutive_visits += 1
+                else:
+                    consecutive_visits = 1 # Reset to 1 since we are visiting a new block
+                    
+                if consecutive_visits > MAX_CONSECUTIVE_VISITS:
+                    # Force the second-best block
+                    scores = decomposer.score_blocks(betas)
+                    if not isinstance(scores, np.ndarray):
+                        scores = np.array(scores)
+                    
+                    scores[suggested_idx] = -999.0  # Heavily suppress current best block
+                    forced_idx = np.argmax(scores).item()
+                    
+                    active_block = decomposer.blocks[forced_idx]
+                    last_block_idx = forced_idx
+                    consecutive_visits = 1 
+                    print(f"   [Phase 2] GP Target: Block {suggested_idx} | [FORCED ROTATION] Switched to Block {forced_idx}: {active_block}")
+                else:
+                    active_block = suggested_block
+                    last_block_idx = suggested_idx
+                    print(f"   [Phase 2] GP Target Block Indices: {active_block} (Visit {consecutive_visits}/{MAX_CONSECUTIVE_VISITS})")
         # ---------------------------
         
         # D. Generate & Score Candidates
@@ -252,11 +265,12 @@ def run_adversarial_attack():
             best_x = next_x
             
             # --- HOT BLOCK MECHANIC ---
-            # If we are in Phase 2, reset the boredom counter so the GP can keep exploiting this goldmine!
+            # If we are in Phase 2, lock the optimizer onto this block!
             if step > phase_1_budget:
-                print("   [Hot Block] Resetting rotation counter! Letting the optimizer keep mining this block.")
-                consecutive_visits = 0
-            # --------------------------
+                print(f"   [Hot Block] Locking onto Block {last_block_idx} for the next {HOT_BLOCK_DURATION} iterations!")
+                hot_block_timer = HOT_BLOCK_DURATION
+                hot_block_idx = last_block_idx
+            # ----------------------------------
 
         # Stopping Condition
         if best_loss > success_threshold:
