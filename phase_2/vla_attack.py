@@ -155,6 +155,7 @@ def run_adversarial_attack():
     
     # Dictionaries to maintain local history for each block
     block_histories = {} 
+    exhausted_blocks = set()
     betas = None # Used to pick the next block based on previous GP fits
 
     # --- 3. The BO Loop ---
@@ -175,20 +176,38 @@ def run_adversarial_attack():
             print(f"   [Phase 1] Forcing Suffix Block Indices: {active_block}")
 
         else:
-            suggested_block = decomposer.get_most_important_block(betas)
-            suggested_idx = decomposer.blocks.index(suggested_block)
-            active_block = suggested_block
-            print(f"   [Phase 2] GP Target Block: {suggested_idx}")
+            available_indices = [i for i, b in enumerate(decomposer.blocks)
+                                if tuple(b) not in exhausted_blocks]
             
-            # [FIX] SUFFIX FREEZING: Strip any suffix indices from the chosen block
+            if not available_indices:
+                print("   [Warning] All blocks exhausted. Stopping.")
+                break
+            
+            all_scores = decomposer.score_blocks(betas) if betas is not None else [1.0] * len(decomposer.blocks)
+            if not isinstance(all_scores, np.ndarray):
+                all_scores = np.array(all_scores)
+            
+            available_scores = sorted([(i, all_scores[i]) for i in available_indices],
+                                    key=lambda x: x[1], reverse=True)
+            
+            n = len(available_scores)
+            decay = 0.6
+            raw_probs = [decay ** i for i in range(n)]
+            probs = [p / sum(raw_probs) for p in raw_probs]
+            
+            chosen_rank = np.random.choice(n, p=probs)
+            chosen_idx = available_scores[chosen_rank][0]
+            active_block = decomposer.blocks[chosen_idx]
+            print(f"   [Phase 2] Sampled Block: {chosen_idx} (rank {chosen_rank+1}/{n}, p={probs[chosen_rank]:.2f})")
+            
+            # Suffix freezing
             original_len = len(active_block)
             active_block = [idx for idx in active_block if idx not in suffix_indices]
             if len(active_block) < original_len:
-                print(f"   [Suffix Protect] Prevented overlap. Adjusted active block to: {active_block}")
+                print(f"   [Suffix Protect] Adjusted active block to: {active_block}")
             
             if not active_block:
-                print("   [Warning] Block entirely overlapped with suffix. Rotating next step.")
-                consecutive_visits = 999 
+                print("   [Warning] Block entirely overlapped with suffix. Skipping.")
                 continue
 
         active_block_tuple = tuple(active_block)
@@ -224,7 +243,7 @@ def run_adversarial_attack():
                 
         if not novel_candidates:
             print("   [Warning] Exhausted 1-Hamming space for this block. Forcing rotation.")
-            consecutive_visits = 999 
+            exhausted_blocks.add(active_block_tuple)
             continue 
             
         candidates_X = torch.stack(novel_candidates)
