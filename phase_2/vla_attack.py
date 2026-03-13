@@ -118,7 +118,7 @@ def run_adversarial_attack():
     # --- 1. Setup & Hyperparameters ---
     device = "mps" if torch.backends.mps.is_available() else "cuda" if torch.cuda.is_available() else "cpu"
     
-    budget = 100              # BO Iterations
+    budget = 150              # BO Iterations
     block_size = 4            # Tokens to mutate at once
     success_threshold = -0.05 # How close to 0 loss we consider a "jailbreak"
 
@@ -129,7 +129,7 @@ def run_adversarial_attack():
     vla = VLAModel() 
     image_batch = load_task_images(base_dir="datasets_2", task_name="task_2", num_images=20)
     
-    space = HybridSearchSpace(base_text=base_prompt, num_suffixes=4, max_synonyms=8, suffix_vocab_size=500)
+    space = HybridSearchSpace(base_text=base_prompt, num_suffixes=4, max_synonyms=20, suffix_vocab_size=500)
     surrogate = GPSurrogate(sequence_length=space.sequence_length, device=device)
     decomposer = BlockDecomposer(sequence_length=space.sequence_length, block_size=block_size)
     
@@ -152,16 +152,8 @@ def run_adversarial_attack():
     
     print(f"   -> Initial Prompt: '{orig_text}'")
     print(f"   -> Initial Averaged Loss (Neg MSE): {orig_loss:.4f}")
-
-    # --- Tracking & Local History Dictionaries ---
-    MAX_CONSECUTIVE_VISITS = 5  
-    HOT_BLOCK_DURATION = 5
-    last_block_idx = None
-    consecutive_visits = 0
-    hot_block_timer = 0
-    hot_block_idx = None
     
-    # [NEW] Dictionaries to maintain local history for each block
+    # Dictionaries to maintain local history for each block
     block_histories = {} 
     betas = None # Used to pick the next block based on previous GP fits
 
@@ -181,37 +173,12 @@ def run_adversarial_attack():
         if step <= phase_1_budget:
             active_block = suffix_indices.copy()
             print(f"   [Phase 1] Forcing Suffix Block Indices: {active_block}")
-            consecutive_visits = 0
-            last_block_idx = None
+
         else:
-            if hot_block_timer > 0:
-                active_block = decomposer.blocks[hot_block_idx]
-                last_block_idx = hot_block_idx
-                hot_block_timer -= 1
-                consecutive_visits = 1
-                print(f"   [Phase 2] 🔥 HOT BLOCK ACTIVE: Staying on Block {hot_block_idx}")
-            else:
-                suggested_block = decomposer.get_most_important_block(betas)
-                suggested_idx = decomposer.blocks.index(suggested_block)
-                
-                if suggested_idx == last_block_idx:
-                    consecutive_visits += 1
-                else:
-                    consecutive_visits = 1
-                    
-                if consecutive_visits > MAX_CONSECUTIVE_VISITS:
-                    scores = decomposer.score_blocks(betas)
-                    if not isinstance(scores, np.ndarray): scores = np.array(scores)
-                    scores[suggested_idx] = -999.0 
-                    forced_idx = int(np.argmax(scores))
-                    active_block = decomposer.blocks[forced_idx]
-                    last_block_idx = forced_idx
-                    consecutive_visits = 1 
-                    print(f"   [Phase 2] [FORCED ROTATION] Switched to Block {forced_idx}")
-                else:
-                    active_block = suggested_block
-                    last_block_idx = suggested_idx
-                    print(f"   [Phase 2] GP Target Block: {suggested_idx} (Visit {consecutive_visits}/{MAX_CONSECUTIVE_VISITS})")
+            suggested_block = decomposer.get_most_important_block(betas)
+            suggested_idx = decomposer.blocks.index(suggested_block)
+            active_block = suggested_block
+            print(f"   [Phase 2] GP Target Block: {suggested_idx}")
             
             # [FIX] SUFFIX FREEZING: Strip any suffix indices from the chosen block
             original_len = len(active_block)
@@ -290,12 +257,6 @@ def run_adversarial_attack():
                 if tuple(best_x.tolist()) not in set(tuple(x.tolist()) for x in block_histories[k]['X']):
                     block_histories[k]['X'] = torch.cat([block_histories[k]['X'], best_x.unsqueeze(0)], dim=0)
                     block_histories[k]['Y'] = torch.cat([block_histories[k]['Y'], torch.tensor([best_loss])], dim=0)
-            
-            # Hot Block Trigger
-            if step > phase_1_budget:
-                print(f"   [Hot Block] Locking onto Block {last_block_idx} for the next {HOT_BLOCK_DURATION} iterations!")
-                hot_block_timer = HOT_BLOCK_DURATION
-                hot_block_idx = last_block_idx
 
         # Stopping Condition
         if best_loss > success_threshold:
