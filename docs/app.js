@@ -183,7 +183,7 @@ renderSelection();
 
 async function loadSnapshot() {
   try {
-    const response = await fetch('data/run-snapshot.json');
+    const response = await fetch('data/run-snapshot.json?v=partial-55');
     if (!response.ok) throw new Error('Snapshot unavailable');
     snapshot = await response.json();
     records = snapshot.evaluations.filter(r => r.kind === 'search_baseline' || r.kind === 'candidate');
