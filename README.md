@@ -1,6 +1,8 @@
 # Kintsugi
 An experimental fracture of VLA models: exposing universal vulnerabilities so they may be mended with gold.
 
+[Explore the interactive project showcase](https://artifex2002.github.io/project_Kintsugi/) · [Website source and publishing guide](website/README.md)
+
 ---
 
 This repo is a reproducible research environment (provides a ready-to-use **conda(mamba)** environment) for running and experimenting with my theorized universal attack on Vision-Language-Action models, specifically on **SmolVLA**, in simulation using the **LIBERO** benchmark suite on the **MuJoCo** physics engine. 

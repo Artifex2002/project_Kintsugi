@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f3f0e9">
+  <meta name="description" content="Kintsugi is an independent research project investigating how changes in language affect robotic action in Vision-Language-Action models.">
+  <title>Kintsugi — Where language becomes motion</title>
+  <link rel="canonical" href="https://artifex2002.github.io/project_Kintsugi/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Kintsugi — Where language becomes motion">
+  <meta property="og:description" content="An interactive research showcase investigating instruction sensitivity in Vision-Language-Action models.">
+  <meta property="og:url" content="https://artifex2002.github.io/project_Kintsugi/">
+  <meta property="og:image" content="https://artifex2002.github.io/project_Kintsugi/assets/kintsugi-arm.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Sans:wght@400;450;500;600;650;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="header">
+    <a class="brand" href="#" aria-label="Kintsugi home"><svg class="brand-mark" viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="15.5"/><path d="m19 2-3 11 6 5-8 8 3 8M16 13l-12 3m18 2 11-5M14 26l-8 1"/></svg><span>Kintsugi<span class="brand-jp" lang="ja">金継ぎ</span></span></a>
+    <nav aria-label="Main navigation"><a href="#question">The question</a><a href="#method">Method</a><a href="#experiment">Experiment</a><a href="#notes">Notes</a></nav>
+    <a class="header-source" href="https://github.com/Artifex2002/project_Kintsugi" target="_blank" rel="noopener">View source <span aria-hidden="true">↗</span></a>
+  </header>
+  <main id="main">
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-art"><img src="assets/kintsugi-arm.png" alt="Conceptual porcelain robot arm with fine gold seams, reaching toward a charcoal cube" fetchpriority="high"></div>
+      <div class="hero-content">
+        <p class="eyebrow"><span class="gold-dot"></span> An independent research project</p>
+        <h1 id="hero-title">Small changes.<br>Physical<br><em>consequences.</em></h1>
+        <p class="hero-description">Where language becomes motion.<br>And where the relationship begins to fracture.</p>
+        <p class="hero-detail">Investigating instruction sensitivity in Vision-Language-Action models, from semantic geometry to adversarial search.</p>
+        <div class="hero-actions"><a class="button button-dark" href="#experiment">Explore the experiment <span aria-hidden="true">↓</span></a><a class="text-link" href="#question">Read the story <span aria-hidden="true">↗</span></a></div>
+        <div class="hero-credit"><span class="credit-line"></span> A study by Ashutosh Panda</div>
+      </div>
+      <div class="art-caption"><span>Fig. 01 — An intelligence in pieces</span><span>Conceptual artwork · AI-generated</span></div>
+      <span class="hero-side-label" aria-hidden="true">VISION / LANGUAGE / ACTION</span>
+    </section>
+
+    <div class="research-strip" aria-label="Research stack"><div><span class="micro">01 / Model</span><strong>SmolVLA</strong></div><div><span class="micro">02 / Benchmark</span><strong>LIBERO</strong></div><div><span class="micro">03 / Search</span><strong>Bayesian optimization</strong></div><div><span class="micro">04 / Simulation stack</span><strong>MuJoCo</strong></div><a href="#question" aria-label="Continue to the research question">↓</a></div>
+
+    <section class="section question" id="question" aria-labelledby="question-title">
+      <div class="section-intro"><p class="eyebrow">01 <span>/</span> The question</p><h2 id="question-title">When words shift,<br><em>what moves?</em></h2><p>A robot sees a scene, reads an instruction, and predicts an action. But how closely does a change in meaning correspond to a change in motion?</p><p>Kintsugi explores that connection—and whether searching over language can steer a model toward a chosen action.</p><a class="inline-link" href="#method">Follow the investigation <span aria-hidden="true">→</span></a></div>
+      <div class="input-study">
+        <div class="study-top"><span class="micro">The language-to-action pathway</span><span class="micro quiet">A conceptual view</span></div>
+        <div class="study-scene"><img src="assets/reference-scene.png" alt="Saved LIBERO scene with a robot gripper above mugs on a wooden table" loading="lazy"><div class="scene-tag"><span class="gold-dot"></span> LIBERO observation</div><span class="camera-label micro">Camera / reference image</span></div>
+        <div class="instruction-example"><div class="micro">Language instruction <span>Illustrative example</span></div><div class="example-phrase" id="example-phrase">“Pick up the mug.”</div><div class="example-options" aria-label="Illustrative instruction"><button type="button" class="selected" aria-pressed="true" data-example="original">Original</button><button type="button" aria-pressed="false" data-example="paraphrase">Paraphrase</button><button type="button" aria-pressed="false" data-example="opposite">Opposite</button></div></div>
+        <div class="study-output"><span class="micro">Vision + language</span><span class="study-arrow" aria-hidden="true">→</span><strong>SmolVLA</strong><span class="study-arrow" aria-hidden="true">→</span><span>7-component action</span></div>
+        <p class="study-caption" id="example-caption">One instruction. One observation. What action does the model predict?</p>
+      </div>
+    </section>
+
+    <section class="method" id="method" aria-labelledby="method-title">
+      <div class="section method-inner"><div class="method-heading"><p class="eyebrow">02 <span>/</span> The method</p><h2 id="method-title">Finding the<br><em>fault lines.</em></h2><p>Three stages of investigation.<br>From the shape of meaning to the search for a fracture.</p></div>
+        <div class="method-workspace"><div class="method-tabs" role="tablist" aria-label="Research stage"><button type="button" id="method-tab-0" role="tab" aria-controls="method-panel" aria-selected="true" data-stage="0"><span>01</span> Map meaning</button><button type="button" id="method-tab-1" role="tab" aria-controls="method-panel" aria-selected="false" data-stage="1"><span>02</span> Measure motion</button><button type="button" id="method-tab-2" role="tab" aria-controls="method-panel" aria-selected="false" data-stage="2"><span>03</span> Search the cracks</button></div>
+          <div id="method-panel" role="tabpanel" aria-labelledby="method-tab-0"><div class="method-panel-top"><span class="micro" id="stage-label">Phase 1 / Semantic geometry</span><span class="micro schematic-label">Method schematic</span></div><div class="method-diagram" id="method-diagram"></div><div class="method-panel-bottom"><h3 id="stage-title">Give language a measurable shape.</h3><p id="stage-description"></p><a class="inline-link" id="stage-source" href="https://github.com/Artifex2002/project_Kintsugi/tree/main/phase_1" target="_blank" rel="noopener">Explore this phase <span aria-hidden="true">↗</span></a></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section experiment" id="experiment" aria-labelledby="experiment-title">
+      <div class="experiment-heading"><div><p class="eyebrow">03 <span>/</span> The experiment</p><h2 id="experiment-title">A window into<br><em>the search.</em></h2></div><div class="experiment-heading-right"><span class="status-pill"><span class="gold-dot"></span> Final results pending</span><p>The explorer is ready for the run.<br> Inspect a recorded snapshot while the study continues.</p></div></div>
+      <div class="explorer">
+        <div class="explorer-toolbar"><div class="explorer-identity"><span class="micro">Experiment 001</span><span>SmolVLA / LIBERO</span></div><div class="view-switch" role="group" aria-label="Explorer data mode"><button type="button" class="selected" aria-pressed="true" data-mode="placeholder">Interface preview</button><button type="button" aria-pressed="false" data-mode="recorded">Recorded snapshot</button></div></div>
+        <div class="explorer-notice" id="explorer-notice"><span class="notice-symbol" aria-hidden="true">◌</span><span>Results will appear here when the experiment is complete. This preview contains no simulated scores.</span></div>
+        <div class="explorer-main"><div class="search-panel"><div class="panel-title"><h3>Optimization trace</h3><span class="micro" id="iteration-label">— / 60 iterations</span></div><div class="trace-container" id="trace-container"><svg id="trace-chart" role="img" aria-label="Optimization plot awaiting recorded data"></svg><div class="chart-empty" id="chart-empty"><span class="empty-cross" aria-hidden="true">+</span><span>The search will leave a trace.</span><small>Recorded objective values will appear here.</small></div></div><div class="chart-legend"><span><i class="legend-line gold"></i>Best so far</span><span><i class="legend-line gray"></i>Candidate</span><span><i class="legend-line dashed"></i>Untouched instruction</span></div><div class="replay-controls"><button type="button" class="play-button" id="play-button" aria-label="Play recorded search" disabled><span aria-hidden="true">▶</span></button><label class="sr-only" for="iteration-slider">Recorded iteration</label><input type="range" id="iteration-slider" min="0" max="60" value="0" disabled><span class="micro" id="replay-time">Awaiting data</span></div></div>
+          <div class="observation-panel"><div class="panel-title"><h3>Observation</h3><span class="micro">Task 2</span></div><img id="observation-image" src="assets/reference-scene.png" alt="Saved LIBERO observation" loading="lazy"><div class="observation-thumbnails" id="observation-thumbnails"></div><p class="micro">Saved frame · fixed robot state</p></div></div>
+        <div class="prompt-comparison"><div><span class="micro">Untouched instruction</span><p id="pristine-prompt">Grasp blue box on counter, put it on burner, rotate the knob to turn off and then end the task.</p></div><div class="candidate-prompt"><div class="candidate-label"><span class="micro">Selected search candidate</span><span class="micro" id="candidate-score">Score —</span></div><p id="candidate-prompt">The selected instruction will appear here.</p><span class="micro" id="prompt-note">Changes will be highlighted against the search baseline.</span></div></div>
+        <div class="action-comparison"><div class="action-heading"><div><h3>From instruction to action</h3><p>Mean first-action components across the evaluation images and passes.</p></div><div class="action-legend"><span><i class="legend-dot neutral"></i>Untouched</span><span><i class="legend-dot gold"></i>Selected</span><span><i class="legend-dot target"></i>Target</span></div></div><div id="action-bars" class="action-bars" aria-label="Action component comparison"></div><div class="action-note"><span id="action-note">Action comparisons are waiting for recorded data.</span><span class="micro">7 action components</span></div></div>
+        <div class="explorer-bottom"><span class="micro" id="snapshot-date">Final evaluation pending</span><a id="download-data" href="data/run-snapshot.json" download="kintsugi-recorded-snapshot.json">Download recorded data <span aria-hidden="true">↓</span></a></div>
+      </div>
+      <div class="experiment-footnotes"><div><span class="micro">What we measure</span><p>How close a predicted action is to a chosen target, using a combined direction and weighted error objective.</p></div><div><span class="micro">What comes next</span><p>Held-out observations, paired simulator rollouts, and broader evaluation across tasks and random seeds.</p></div></div>
+      <div class="rollout-placeholder"><span class="rollout-icon" aria-hidden="true">▷</span><div><span class="micro">Planned demonstration</span><h3>Same scene. Two instructions.</h3><p>A paired robot rollout will go here after simulator evaluation.</p></div><span class="micro rollout-state">Recording pending</span></div>
+    </section>
+
+    <section class="notes-section" id="notes" aria-labelledby="notes-title"><div class="section notes-inner"><div><p class="eyebrow">04 <span>/</span> Research notes</p><h2 id="notes-title">Understanding<br>the fracture is<br><em>the first step.</em></h2><p>金継ぎ — The art of joining with gold.<br>A name for studying vulnerabilities so they can be understood and, eventually, addressed.</p></div><div class="research-notes"><details open><summary><span>01</span> What this study can tell us <span class="details-sign" aria-hidden="true">+</span></summary><p>The current experiment studies one model checkpoint on saved LIBERO images. Its objective measures action proximity to a fixed target. An improved objective alone does not establish physical task failure or a universal attack.</p></details><details><summary><span>02</span> Reading the results carefully <span class="details-sign" aria-hidden="true">+</span></summary><p>Observations share a fixed robot-state vector, and frames may be temporally related. The search changes synonyms and suffix words; reconstructed instructions can also differ from the untouched prompt. The explorer keeps the untouched and search baselines separate.</p></details><details><summary><span>03</span> Reproducibility, in the open <span class="details-sign" aria-hidden="true">+</span></summary><p>Run artifacts retain model revision, seed, image hashes, tested prompts, per-image actions, and objective values. The source repository includes the environment definition and experimental pipeline.</p><a class="inline-link" href="https://github.com/Artifex2002/project_Kintsugi" target="_blank" rel="noopener">Browse the research code ↗</a></details></div></div></section>
+    <section class="closing section"><p class="eyebrow">An open investigation</p><h2>The work continues.<br><em>Follow the fault lines.</em></h2><a class="button button-dark" href="https://github.com/Artifex2002/project_Kintsugi" target="_blank" rel="noopener">Explore the repository <span aria-hidden="true">↗</span></a></section>
+  </main>
+  <footer><div class="footer-top"><a class="brand" href="#">Kintsugi <span class="brand-jp" lang="ja">金継ぎ</span></a><p>Independent research by <a href="https://github.com/Artifex2002" target="_blank" rel="noopener">Ashutosh Panda ↗</a></p><span class="micro">Vision · Language · Action</span></div><div class="footer-word" aria-hidden="true">KINTSUGI</div><div class="footer-bottom"><span>Built to make the research visible.</span><span>Research in progress / 2026</span></div></footer>
+  <div class="sr-only" id="explorer-announcement" aria-live="polite"></div>
+</body>
+</html>
