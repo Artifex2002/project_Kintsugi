@@ -7,3 +7,6 @@
 @media(max-width:760px){.hero{min-height:820px}.hero-art{inset:auto -5% 0 -5%;height:280px;opacity:1}.hero-art img{object-fit:contain;object-position:center bottom;mask-image:linear-gradient(180deg,transparent,#000 18%);-webkit-mask-image:linear-gradient(180deg,transparent,#000 18%)}.hero:after{background:none}.art-caption{bottom:13px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 @media(pointer:coarse){.example-options button{min-height:40px}.method-tabs button{min-height:44px}.view-switch button{min-height:36px}.play-button{width:36px;height:36px}.replay-controls input{height:24px}}
+.hero-description{max-width:395px;font-size:16px;line-height:1.65}.hero-detail{max-width:390px}.hero-detail strong{font-weight:500;color:#575c4e}
+@media(max-width:760px){.hero{min-height:890px}.hero-description{font-size:14px;max-width:350px}.hero-detail{max-width:350px;font-size:11px}}
+@media(max-width:380px){.hero h1{font-size:60px}.hero{min-height:875px}}

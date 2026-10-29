@@ -4,12 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f3f0e9">
-  <meta name="description" content="Kintsugi is an independent research project investigating how changes in language affect robotic action in Vision-Language-Action models.">
-  <title>Kintsugi — Where language becomes motion</title>
+  <meta name="description" content="Can a robot be hacked through an API? Kintsugi investigates whether black-box access can efficiently redirect Vision-Language-Action models—and why that matters when AI controls physical machines.">
+  <title>Kintsugi — Can a robot be hacked through an API?</title>
   <link rel="canonical" href="https://artifex2002.github.io/project_Kintsugi/">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Kintsugi — Where language becomes motion">
-  <meta property="og:description" content="An interactive research showcase investigating instruction sensitivity in Vision-Language-Action models.">
+  <meta property="og:title" content="Kintsugi — Can a robot be hacked through an API?">
+  <meta property="og:description" content="How little access—and how few queries—could it take to redirect a robotic model? An investigation into black-box VLA security and its physical-world stakes.">
   <meta property="og:url" content="https://artifex2002.github.io/project_Kintsugi/">
   <meta property="og:image" content="https://artifex2002.github.io/project_Kintsugi/assets/kintsugi-arm.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -29,10 +29,10 @@
     <section class="hero" aria-labelledby="hero-title">
       <div class="hero-art"><img src="assets/kintsugi-arm.png" alt="Conceptual porcelain robot arm with fine gold seams, reaching toward a charcoal cube" fetchpriority="high"></div>
       <div class="hero-content">
-        <p class="eyebrow"><span class="gold-dot"></span> An independent research project</p>
-        <h1 id="hero-title">Small changes.<br>Physical<br><em>consequences.</em></h1>
-        <p class="hero-description">Where language becomes motion.<br>And where the relationship begins to fracture.</p>
-        <p class="hero-detail">Investigating instruction sensitivity in Vision-Language-Action models, from semantic geometry to adversarial search.</p>
+        <p class="eyebrow"><span class="gold-dot"></span> The question that started Kintsugi</p>
+        <h1 id="hero-title">Can a robot<br>be hacked<br><em>through an API?</em></h1>
+        <p class="hero-description">Can a Vision-Language-Action model be redirected using only API inputs and outputs—and how few queries would it take?</p>
+        <p class="hero-detail"><strong>Why it matters.</strong> When AI controls physical machines, a model vulnerability can become a physical failure—in factories, labs, and safety-critical systems.</p>
         <div class="hero-actions"><a class="button button-dark" href="#experiment">Explore the experiment <span aria-hidden="true">↓</span></a><a class="text-link" href="#question">Read the story <span aria-hidden="true">↗</span></a></div>
         <div class="hero-credit"><span class="credit-line"></span> A study by Ashutosh Panda</div>
       </div>
@@ -43,7 +43,7 @@
     <div class="research-strip" aria-label="Research stack"><div><span class="micro">01 / Model</span><strong>SmolVLA</strong></div><div><span class="micro">02 / Benchmark</span><strong>LIBERO</strong></div><div><span class="micro">03 / Search</span><strong>Bayesian optimization</strong></div><div><span class="micro">04 / Simulation stack</span><strong>MuJoCo</strong></div><a href="#question" aria-label="Continue to the research question">↓</a></div>
 
     <section class="section question" id="question" aria-labelledby="question-title">
-      <div class="section-intro"><p class="eyebrow">01 <span>/</span> The question</p><h2 id="question-title">When words shift,<br><em>what moves?</em></h2><p>A robot sees a scene, reads an instruction, and predicts an action. But how closely does a change in meaning correspond to a change in motion?</p><p>Kintsugi explores that connection—and whether searching over language can steer a model toward a chosen action.</p><a class="inline-link" href="#method">Follow the investigation <span aria-hidden="true">→</span></a></div>
+      <div class="section-intro"><p class="eyebrow">01 <span>/</span> Why I started</p><h2 id="question-title">How little<br><em>access is enough?</em></h2><p>I started Kintsugi to investigate a possibility: could someone redirect a robotic model without seeing its weights or gradients, using only the responses exposed by an API?</p><p>Efficiency is central to that question. If a small query budget can uncover a reliable attack, the barrier to exploitation could fall as these models are deployed more widely.</p><p>In factories, research labs, and safety-critical settings, unintended actions can carry physical consequences. The aim is to understand the access required, the queries spent, and whether an effect survives actual robot execution.</p><a class="inline-link" href="#method">Follow the investigation <span aria-hidden="true">→</span></a></div>
       <div class="input-study">
         <div class="study-top"><span class="micro">The language-to-action pathway</span><span class="micro quiet">A conceptual view</span></div>
         <div class="study-scene"><img src="assets/reference-scene.png" alt="Saved LIBERO scene with a robot gripper above mugs on a wooden table" loading="lazy"><div class="scene-tag"><span class="gold-dot"></span> LIBERO observation</div><span class="camera-label micro">Camera / reference image</span></div>
