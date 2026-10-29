@@ -202,7 +202,13 @@ async function loadSnapshot() {
       button.addEventListener('click', () => { $('observation-image').src = image.asset; $('observation-image').alt = `Saved LIBERO observation ${image.id}`; document.querySelectorAll('.observation-thumbnails button').forEach(b => b.setAttribute('aria-pressed', String(b === button))); });
       $('observation-thumbnails').appendChild(button);
     });
-    if (mode === 'recorded') setMode('recorded');
+    if (records.length) {
+      setMode('recorded');
+      if (snapshot.status !== 'completed') {
+        document.querySelector('.status-pill').lastChild.textContent = ' Partial results · study in progress';
+        document.querySelector('.experiment-heading-right p').textContent = 'Replay the completed evaluations, inspect instruction changes, and compare predicted actions. Final validation is pending.';
+      }
+    }
   } catch {
     document.querySelector('[data-mode="recorded"]').disabled = true;
     $('download-data').hidden = true;
